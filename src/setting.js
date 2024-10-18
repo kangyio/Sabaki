@@ -209,6 +209,7 @@ let defaults = {
   'view.winrategraph_minheight': 30,
   'view.winrategraph_maxheight': 250,
   'view.winrategraph_invert': false,
+  'view.auto_random_rotate': false,
   'infooverlay.duration': 2000,
   'window.height': 604,
   'window.minheight': 440,

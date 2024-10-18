@@ -567,7 +567,9 @@ class Sabaki extends EventEmitter {
         gameIndex: 0,
         gameTrees,
         gameCurrents: gameTrees.map(_ => ({})),
-        boardTransformation: ''
+        boardTransformation: setting.get('view.auto_random_rotate')
+          ? this.getRandomTransformation()
+          : ''
       })
 
       let [firstTree] = gameTrees
@@ -2218,6 +2220,11 @@ class Sabaki extends EventEmitter {
     this.setState({
       boardTransformation: gobantransformer.normalize(transformation)
     })
+  }
+
+  getRandomTransformation() {
+    const transformations = ['r', 'rr', 'rrr', 'f', 'rf', 'rrf', 'rrrf']
+    return transformations[Math.floor(Math.random() * transformations.length)]
   }
 
   pushBoardTransformation(transformation) {
