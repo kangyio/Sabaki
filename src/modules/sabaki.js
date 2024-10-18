@@ -1617,9 +1617,18 @@ class Sabaki extends EventEmitter {
 
   goToSiblingGame(step) {
     let {gameTrees, gameIndex} = this.state
-    let newIndex = Math.max(0, Math.min(gameTrees.length - 1, gameIndex + step))
+    let newTransformation = setting.get('view.auto_random_rotate')
+      ? this.getRandomTransformation()
+      : ''
+
+    //Original Code：Files not cycling
+    //let newIndex = Math.max(0, Math.min(gameTrees.length - 1, gameIndex + step))
+
+    //Cycle through the files
+    let newIndex = (gameIndex + step + gameTrees.length) % gameTrees.length
 
     this.closeDrawer()
+    this.pushBoardTransformation(newTransformation)
     this.setCurrentTreePosition(
       gameTrees[newIndex],
       gameTrees[newIndex].root.id
