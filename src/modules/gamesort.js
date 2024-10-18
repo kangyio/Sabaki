@@ -83,3 +83,7 @@ export function byNumberOfMoves(trees) {
     return compareResult(tr1.getHeight(), tr2.getHeight())
   })
 }
+
+export function byRandom(trees) {
+  return [...trees].sort(() => Math.random() - 0.5)
+}

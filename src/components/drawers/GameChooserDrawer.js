@@ -305,6 +305,8 @@ export default class GameChooserDrawer extends Component {
           click: sortWith(gamesort.byNumberOfMoves)
         },
         {type: 'separator'},
+        {label: t('&Random'), click: sortWith(gamesort.byRandom)},
+        {type: 'separator'},
         {label: t('&Reverse'), click: sortWith(gamesort.reverse)}
       ]
 
