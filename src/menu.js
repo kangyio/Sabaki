@@ -780,7 +780,7 @@ exports.get = function(props = {}) {
               click: () => sabaki.setBoardTransformation('')
             },
             {
-              label: i18n.t('menu.tools', 'Auto Random Rotate'),
+              label: i18n.t('menu.tools', 'Auto Random Rotation'),
               type: 'checkbox',
               checked: setting.get('view.auto_random_rotate'),
               click: () =>

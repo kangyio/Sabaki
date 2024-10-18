@@ -21,7 +21,8 @@ let itemMinWidth = thumbnailSize + 12 + 20
 let itemHeight = 253 + 10 + 20
 
 let getPreviewBoard = tree => {
-  let node = tree.navigate(tree.root.id, 30, {})
+  let previewMoveCount = setting.get('view.auto_random_rotate') ? 0 : 30
+  let node = tree.navigate(tree.root.id, previewMoveCount, {})
   if (!node)
     node = tree.navigate(tree.root.id, tree.getCurrentHeight({}) - 1, {})
 
