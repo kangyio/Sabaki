@@ -1617,9 +1617,9 @@ class Sabaki extends EventEmitter {
 
   goToSiblingGame(step) {
     let {gameTrees, gameIndex} = this.state
-    let autoRotateEnabled = setting.get('view.auto_random_rotate')
-
     let newIndex = Math.max(0, Math.min(gameTrees.length - 1, gameIndex + step))
+
+    let autoRotateEnabled = setting.get('view.auto_random_rotate')
     let isMovingToEdge = newIndex === 0 || newIndex === gameTrees.length - 1
     let shouldRotate =
       autoRotateEnabled && (!isMovingToEdge || newIndex !== gameIndex)
@@ -1631,7 +1631,6 @@ class Sabaki extends EventEmitter {
     } else if (!autoRotateEnabled) {
       this.setBoardTransformation('')
     }
-    console.log('newIndex', newIndex)
     this.setCurrentTreePosition(
       gameTrees[newIndex],
       gameTrees[newIndex].root.id
