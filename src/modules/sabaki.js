@@ -1037,13 +1037,31 @@ class Sabaki extends EventEmitter {
         blockedGuesses.push(...blocked)
         this.setState({blockedGuesses})
       }
+    } else if (this.state.mode === 'tsumego') {
+      if (button !== 0) return
+
+      let nextNode = tree.navigate(treePosition, 1, gameCurrents[gameIndex])
+      if (
+        nextNode == null ||
+        (nextNode.data.B == null && nextNode.data.W == null)
+      ) {
+        return console.log('Tsumego finished')
+      }
+
+      let nextVertex = sgf.parseVertex(
+        nextNode.data[nextNode.data.B != null ? 'B' : 'W'][0]
+      )
+
+      if (helper.vertexEquals(vertex, nextVertex)) {
+        this.makeMove(vertex, {player: nextNode.data.B != null ? 1 : -1})
+      }
     }
 
     this.events.emit('vertexClick')
   }
 
   makeMove(vertex, {player = null, generateEngineMove = false} = {}) {
-    if (!['play', 'autoplay', 'guess'].includes(this.state.mode)) {
+    if (!['play', 'autoplay', 'guess', 'tsumego'].includes(this.state.mode)) {
       this.closeDrawer()
       this.setMode('play')
     }
