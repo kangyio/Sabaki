@@ -536,7 +536,6 @@ exports.get = function(props = {}) {
       submenu: [
         {
           label: i18n.t('menu.tools', 'Toggle Auto&play Mode'),
-          type: 'checkbox',
           click: () =>
             sabaki.setMode(
               sabaki.state.mode === 'autoplay' ? 'play' : 'autoplay'
@@ -544,13 +543,11 @@ exports.get = function(props = {}) {
         },
         {
           label: i18n.t('menu.tools', 'Toggle &Guess Mode'),
-          type: 'checkbox',
           click: () =>
             sabaki.setMode(sabaki.state.mode === 'guess' ? 'play' : 'guess')
         },
         {
           label: i18n.t('menu.tools', 'Toggle &Tsumego Mode'),
-          type: 'checkbox',
           click: () =>
             sabaki.setMode(sabaki.state.mode === 'tsumego' ? 'play' : 'tsumego')
         },
