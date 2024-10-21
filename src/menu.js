@@ -857,7 +857,14 @@ exports.get = function(props = {}) {
         },
         {
           label: i18n.t('menu.developer', 'Toggle &Developer Tools'),
+          accelerator: 'CmdOrCtrl+F12',
           click: () => sabaki.window.webContents.toggleDevTools(),
+          neverDisable: true
+        },
+        {
+          label: i18n.t('menu.developer', 'Console &Log'),
+          accelerator: 'F12',
+          click: () => console.log('Console log'),
           neverDisable: true
         },
         {type: 'separator'},
