@@ -158,13 +158,14 @@ header {
   }
   #bar .bar .close:active { opacity: .7; }
   #scoring .close, #estimator .close, #find .close,
-  #guess .close, #autoplay .close {
+  #guess .close, #tsumego .close, #autoplay .close {
     filter: invert(100%);
   }
   .edit #bar { background: #C4BD64; }
   .scoring #bar, .estimator #bar { background: #C42311; }
   .find #bar { background: #0050C0; }
   .guess #bar { background: #823499; }
+  .tsumego #bar { background: #6abb0d; }
   #bar .bar input {
     box-sizing: border-box;
     height: 32px;

@@ -4,6 +4,7 @@ import Goban from './Goban.js'
 import PlayBar from './bars/PlayBar.js'
 import EditBar from './bars/EditBar.js'
 import GuessBar from './bars/GuessBar.js'
+import TsumegoBar from './bars/TsumegoBar.js'
 import AutoplayBar from './bars/AutoplayBar.js'
 import ScoringBar from './bars/ScoringBar.js'
 import FindBar from './bars/FindBar.js'
@@ -153,8 +154,8 @@ export default class MainView extends Component {
           showCoordinates,
           showMoveColorization,
           showMoveNumbers: mode !== 'edit' && showMoveNumbers,
-          showNextMoves: mode !== 'guess' && showNextMoves,
-          showSiblings: mode !== 'guess' && showSiblings,
+          showNextMoves: !['guess', 'tsumego'].includes(mode) && showNextMoves,
+          showSiblings: !['guess', 'tsumego'].includes(mode) && showNextMoves,
           fuzzyStonePlacement,
           animateStonePlacement,
 
@@ -196,6 +197,11 @@ export default class MainView extends Component {
         }),
 
         h(GuessBar, {
+          mode,
+          treePosition
+        }),
+
+        h(TsumegoBar, {
           mode,
           treePosition
         }),
