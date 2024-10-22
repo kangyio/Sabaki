@@ -1040,16 +1040,13 @@ class Sabaki extends EventEmitter {
     } else if (this.state.mode === 'tsumego') {
       if (button !== 0) return
 
-      let {gameTrees, gameIndex, gameCurrents, treePosition} = this.state
-      let tree = gameTrees[gameIndex]
-      let board = gametree.getBoard(tree, treePosition)
-
       if (board.get(vertex) !== 0) return
 
       let vertexKey = vertex.join(',')
       let validMove =
         vertexKey in board.childrenInfo || vertexKey in board.siblingsInfo
 
+      // Wrong Answer
       if (!validMove) return
 
       let signValue =
@@ -1065,7 +1062,18 @@ class Sabaki extends EventEmitter {
 
       if (nextNode == null) {
         console.log('Tsumego problem finished')
-        // TODO: Implement right/wrong answer determination here
+        let currentNode = tree.get(newPosition)
+
+        if (currentNode.data.BM != null) {
+          console.log('Wrong answer')
+          // TODO: Handle wrong answer (e.g., show message to user, reset problem, etc.)
+        } else if (currentNode.data.TE != null) {
+          console.log('Correct answer')
+          // TODO: Handle correct answer (e.g., show congratulations, move to next problem, etc.)
+        } else {
+          console.log('No right/wrong indication found')
+          // TODO: Handle cases where there's no clear right/wrong indication
+        }
       }
     }
 
