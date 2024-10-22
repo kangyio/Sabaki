@@ -1040,20 +1040,32 @@ class Sabaki extends EventEmitter {
     } else if (this.state.mode === 'tsumego') {
       if (button !== 0) return
 
-      let nextNode = tree.navigate(treePosition, 1, gameCurrents[gameIndex])
-      if (
-        nextNode == null ||
-        (nextNode.data.B == null && nextNode.data.W == null)
-      ) {
-        return console.log('Tsumego finished')
-      }
+      let {gameTrees, gameIndex, gameCurrents, treePosition} = this.state
+      let tree = gameTrees[gameIndex]
+      let board = gametree.getBoard(tree, treePosition)
 
-      let nextVertex = sgf.parseVertex(
-        nextNode.data[nextNode.data.B != null ? 'B' : 'W'][0]
-      )
+      if (board.get(vertex) !== 0) return
 
-      if (helper.vertexEquals(vertex, nextVertex)) {
-        this.makeMove(vertex, {player: nextNode.data.B != null ? 1 : -1})
+      let vertexKey = vertex.join(',')
+      let validMove =
+        vertexKey in board.childrenInfo || vertexKey in board.siblingsInfo
+
+      if (!validMove) return
+
+      let signValue =
+        board.childrenInfo[vertexKey]?.sign ||
+        board.siblingsInfo[vertexKey]?.sign
+      let player =
+        typeof signValue === 'number' ? signValue : signValue === 'B' ? 1 : -1
+
+      this.makeMove(vertex, {player: player})
+
+      let newPosition = this.state.treePosition
+      let nextNode = tree.navigate(newPosition, 1, gameCurrents[gameIndex])
+
+      if (nextNode == null) {
+        console.log('Tsumego problem finished')
+        // TODO: Implement right/wrong answer determination here
       }
     }
 

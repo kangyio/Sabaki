@@ -155,7 +155,7 @@ export default class MainView extends Component {
           showMoveColorization,
           showMoveNumbers: mode !== 'edit' && showMoveNumbers,
           showNextMoves: !['guess', 'tsumego'].includes(mode) && showNextMoves,
-          showSiblings: !['guess', 'tsumego'].includes(mode) && showNextMoves,
+          showSiblings: !['guess', 'tsumego'].includes(mode) && showSiblings,
           fuzzyStonePlacement,
           animateStonePlacement,
 
