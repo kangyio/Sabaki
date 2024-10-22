@@ -11,6 +11,7 @@ const {resolve} = require('path')
 const i18n = require('./i18n')
 const setting = require('./setting')
 const updater = require('./updater')
+const isDev = process.env.NODE_ENV !== 'production'
 require('@electron/remote/main').initialize()
 
 let windows = []
@@ -71,6 +72,11 @@ function newWindow(path) {
   })
 
   window.loadURL(`file://${resolve(__dirname, '../index.html')}`)
+
+  // Open devtools if in dev mode
+  if (isDev) {
+    window.webContents.openDevTools()
+  }
 
   return window
 }
