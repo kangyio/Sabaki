@@ -78,6 +78,7 @@ class Sabaki extends EventEmitter {
       showWinrateGraph: setting.get('view.show_winrategraph'),
       showGameGraph: setting.get('view.show_graph'),
       showCommentBox: setting.get('view.show_comments'),
+      seenAnswerComment: setting.get('view.seen_answer_comment'),
       sidebarWidth: setting.get('view.sidebar_width'),
       graphGridSize: null,
       graphNodeSize: null,
@@ -1049,7 +1050,6 @@ class Sabaki extends EventEmitter {
           board.siblingsInfo[vertexKey].sign ===
             board.childrenInfo[Object.keys(board.childrenInfo)[0]]?.sign)
 
-      // Wrong Answer
       if (!validMove) {
         console.log('Invalid move in tsumego mode')
         return
@@ -1066,11 +1066,40 @@ class Sabaki extends EventEmitter {
       let newPosition = this.state.treePosition
       let nextNode = tree.navigate(newPosition, 1, gameCurrents[gameIndex])
 
+      // Check if we've seen an answer comment along the path
+      let seenAnswerComment = this.state.seenAnswerComment || 'undefined'
+
+      let currentNode = tree.get(newPosition)
+      let comment = currentNode.data.C?.[0]
+
+      if (comment) {
+        let trimmedComment = comment.trim().toUpperCase()
+        if (
+          trimmedComment.startsWith('RIGHT') ||
+          trimmedComment.startsWith('正解')
+        ) {
+          seenAnswerComment = 'right'
+        } else if (
+          trimmedComment.startsWith('WRONG') ||
+          trimmedComment.startsWith('失败')
+        ) {
+          seenAnswerComment = 'wrong'
+        }
+      }
+
+      // Update the state with the new seenAnswerComment value
+      this.setState({seenAnswerComment: seenAnswerComment})
+
+      console.log('Current comment:', comment)
+      console.log(
+        'Trimmed uppercase comment:',
+        comment ? comment.trim().toUpperCase() : 'No comment'
+      )
+      console.log('seenAnswerComment:', seenAnswerComment)
+
       if (nextNode == null) {
         console.log('Tsumego problem finished')
-        let currentNode = tree.get(newPosition)
 
-        let comment = currentNode.data.C?.[0]
         let answerCheck = 'undefined'
 
         if (currentNode.data.TE != null) {
@@ -1092,6 +1121,11 @@ class Sabaki extends EventEmitter {
           }
         }
 
+        // If the last node is undefined, use the answer seen along the path
+        if (answerCheck === 'undefined' && seenAnswerComment !== 'undefined') {
+          answerCheck = seenAnswerComment
+        }
+
         switch (answerCheck) {
           case 'right':
             console.log('Correct answer')
@@ -1106,6 +1140,12 @@ class Sabaki extends EventEmitter {
             // TODO: Handle undefined answer
             break
         }
+
+        console.log('Final answerCheck:', answerCheck)
+        console.log('Final seenAnswerComment:', seenAnswerComment)
+
+        // Reset seenAnswerComment for the next problem
+        this.setState({seenAnswerComment: 'undefined'})
       }
     }
 

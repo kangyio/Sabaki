@@ -195,6 +195,7 @@ let defaults = {
   'view.show_menubar': true,
   'view.show_leftsidebar': false,
   'view.show_comments': false,
+  'view.seen_answer_comment': 'undefined',
   'view.show_coordinates': false,
   'view.show_graph': false,
   'view.show_move_colorization': true,
