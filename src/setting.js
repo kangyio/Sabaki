@@ -196,6 +196,10 @@ let defaults = {
   'view.show_leftsidebar': false,
   'view.show_comments': false,
   'view.seen_answer_comment': 'undefined',
+  'view.answer_indicators': {
+    right: ['RIGHT', '正解'],
+    wrong: ['WRONG', '失败']
+  },
   'view.show_coordinates': false,
   'view.show_graph': false,
   'view.show_move_colorization': true,

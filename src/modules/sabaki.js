@@ -79,6 +79,7 @@ class Sabaki extends EventEmitter {
       showGameGraph: setting.get('view.show_graph'),
       showCommentBox: setting.get('view.show_comments'),
       seenAnswerComment: setting.get('view.seen_answer_comment'),
+      answerIndicators: setting.get('view.answer_indicators'),
       sidebarWidth: setting.get('view.sidebar_width'),
       graphGridSize: null,
       graphNodeSize: null,
@@ -1039,9 +1040,7 @@ class Sabaki extends EventEmitter {
         this.setState({blockedGuesses})
       }
     } else if (this.state.mode === 'tsumego') {
-      if (button !== 0) return
-
-      if (board.get(vertex) !== 0) return
+      if (button !== 0 || board.get(vertex) !== 0) return
 
       let vertexKey = vertex.join(',')
       let validMove =
@@ -1066,81 +1065,29 @@ class Sabaki extends EventEmitter {
       let newPosition = this.state.treePosition
       let nextNode = tree.navigate(newPosition, 1, gameCurrents[gameIndex])
 
-      // Get comment data using the getComment method
+      // Get comment data and check for answer
       let commentData = this.getComment(newPosition)
+      let currentAnswer = this.checkCommentForAnswer(commentData)
+
+      // Update seenAnswerComment if a definitive answer is found
+      if (currentAnswer) {
+        this.setState({seenAnswerComment: currentAnswer})
+      }
 
       console.log('Comment data:', commentData)
-
-      // Function to check if a string indicates a right or wrong answer
-      const checkAnswerIndicator = text => {
-        if (!text) return null
-        let trimmedUpperText = text.trim().toUpperCase()
-        if (
-          trimmedUpperText.startsWith('RIGHT') ||
-          trimmedUpperText.startsWith('正解')
-        ) {
-          return 'right'
-        } else if (
-          trimmedUpperText.startsWith('WRONG') ||
-          trimmedUpperText.startsWith('失败')
-        ) {
-          return 'wrong'
-        }
-        return null
-      }
-
-      // Check if we've seen an answer comment along the path
-      let seenAnswerComment = this.state.seenAnswerComment || 'undefined'
-
-      // Check title first, then comment
-      let titleCheck = checkAnswerIndicator(commentData.title)
-      if (titleCheck) {
-        seenAnswerComment = titleCheck
-      } else {
-        let commentCheck = checkAnswerIndicator(commentData.comment)
-        if (commentCheck) {
-          seenAnswerComment = commentCheck
-        }
-      }
-
-      // Update the state with the new seenAnswerComment value
-      this.setState({seenAnswerComment: seenAnswerComment})
-
-      console.log('seenAnswerComment:', seenAnswerComment)
+      console.log('Current answer:', currentAnswer)
 
       if (nextNode == null) {
         console.log('Tsumego problem finished')
 
-        let answerCheck = 'undefined'
+        let finalAnswer =
+          currentAnswer || this.state.seenAnswerComment || 'undefined'
 
-        if (commentData.moveAnnotation === 'TE') {
-          answerCheck = 'right'
-        } else if (commentData.moveAnnotation === 'BM') {
-          answerCheck = 'wrong'
-        }
+        console.log(
+          `${finalAnswer.charAt(0).toUpperCase() + finalAnswer.slice(1)} answer`
+        )
 
-        // If the last node is undefined, use the answer seen along the path
-        if (answerCheck === 'undefined' && seenAnswerComment !== 'undefined') {
-          answerCheck = seenAnswerComment
-        }
-
-        switch (answerCheck) {
-          case 'right':
-            console.log('Correct answer')
-            // TODO: Handle correct answer
-            break
-          case 'wrong':
-            console.log('Wrong answer')
-            // TODO: Handle wrong answer
-            break
-          case 'undefined':
-            console.log('Undefined answer')
-            // TODO: Handle undefined answer
-            break
-        }
-
-        console.log('Final answerCheck:', answerCheck)
-        console.log('Final seenAnswerComment:', seenAnswerComment)
+        // TODO: Handle answer (e.g., show message, update score, etc.)
 
         // Reset seenAnswerComment for the next problem
         this.setState({seenAnswerComment: 'undefined'})
@@ -2439,6 +2386,38 @@ class Sabaki extends EventEmitter {
           ? 'GB'
           : null
     }
+  }
+
+  checkAnswerIndicator(text) {
+    if (!text) return null
+    let trimmedUpperText = text.trim().toUpperCase()
+    for (let [answer, indicators] of Object.entries(
+      this.state.answerIndicators
+    )) {
+      if (
+        indicators.some(indicator =>
+          trimmedUpperText.startsWith(indicator.toUpperCase())
+        )
+      ) {
+        return answer
+      }
+    }
+    return null
+  }
+
+  checkCommentForAnswer(commentData) {
+    // Check title first, then comment
+    let titleCheck = this.checkAnswerIndicator(commentData.title)
+    if (titleCheck) return titleCheck
+
+    let commentCheck = this.checkAnswerIndicator(commentData.comment)
+    if (commentCheck) return commentCheck
+
+    // Check move annotations
+    if (commentData.moveAnnotation === 'TE') return 'right'
+    if (commentData.moveAnnotation === 'BM') return 'wrong'
+
+    return null
   }
 
   setComment(treePosition, data) {
