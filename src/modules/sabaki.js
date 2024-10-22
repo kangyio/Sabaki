@@ -1066,35 +1066,46 @@ class Sabaki extends EventEmitter {
       let newPosition = this.state.treePosition
       let nextNode = tree.navigate(newPosition, 1, gameCurrents[gameIndex])
 
+      // Get comment data using the getComment method
+      let commentData = this.getComment(newPosition)
+
+      console.log('Comment data:', commentData)
+
+      // Function to check if a string indicates a right or wrong answer
+      const checkAnswerIndicator = text => {
+        if (!text) return null
+        let trimmedUpperText = text.trim().toUpperCase()
+        if (
+          trimmedUpperText.startsWith('RIGHT') ||
+          trimmedUpperText.startsWith('正解')
+        ) {
+          return 'right'
+        } else if (
+          trimmedUpperText.startsWith('WRONG') ||
+          trimmedUpperText.startsWith('失败')
+        ) {
+          return 'wrong'
+        }
+        return null
+      }
+
       // Check if we've seen an answer comment along the path
       let seenAnswerComment = this.state.seenAnswerComment || 'undefined'
 
-      let currentNode = tree.get(newPosition)
-      let comment = currentNode.data.C?.[0]
-
-      if (comment) {
-        let trimmedComment = comment.trim().toUpperCase()
-        if (
-          trimmedComment.startsWith('RIGHT') ||
-          trimmedComment.startsWith('正解')
-        ) {
-          seenAnswerComment = 'right'
-        } else if (
-          trimmedComment.startsWith('WRONG') ||
-          trimmedComment.startsWith('失败')
-        ) {
-          seenAnswerComment = 'wrong'
+      // Check title first, then comment
+      let titleCheck = checkAnswerIndicator(commentData.title)
+      if (titleCheck) {
+        seenAnswerComment = titleCheck
+      } else {
+        let commentCheck = checkAnswerIndicator(commentData.comment)
+        if (commentCheck) {
+          seenAnswerComment = commentCheck
         }
       }
 
       // Update the state with the new seenAnswerComment value
       this.setState({seenAnswerComment: seenAnswerComment})
 
-      console.log('Current comment:', comment)
-      console.log(
-        'Trimmed uppercase comment:',
-        comment ? comment.trim().toUpperCase() : 'No comment'
-      )
       console.log('seenAnswerComment:', seenAnswerComment)
 
       if (nextNode == null) {
@@ -1102,23 +1113,10 @@ class Sabaki extends EventEmitter {
 
         let answerCheck = 'undefined'
 
-        if (currentNode.data.TE != null) {
+        if (commentData.moveAnnotation === 'TE') {
           answerCheck = 'right'
-        } else if (currentNode.data.BM != null) {
+        } else if (commentData.moveAnnotation === 'BM') {
           answerCheck = 'wrong'
-        } else if (comment) {
-          let trimmedComment = comment.trim().toUpperCase()
-          if (
-            trimmedComment.startsWith('RIGHT') ||
-            trimmedComment.startsWith('正解')
-          ) {
-            answerCheck = 'right'
-          } else if (
-            trimmedComment.startsWith('WRONG') ||
-            trimmedComment.startsWith('失败')
-          ) {
-            answerCheck = 'wrong'
-          }
         }
 
         // If the last node is undefined, use the answer seen along the path
