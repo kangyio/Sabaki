@@ -8,6 +8,7 @@ import TsumegoBar from './bars/TsumegoBar.js'
 import AutoplayBar from './bars/AutoplayBar.js'
 import ScoringBar from './bars/ScoringBar.js'
 import FindBar from './bars/FindBar.js'
+import AnswerOverlay from './AnswerOverlay.js'
 
 import sabaki from '../modules/sabaki.js'
 import * as gametree from '../modules/gametree.js'
@@ -104,7 +105,8 @@ export default class MainView extends Component {
 
       selectedTool,
       findText,
-      findVertex
+      findVertex,
+      answerStatus
     },
     {gobanCrosshair}
   ) {
@@ -170,6 +172,8 @@ export default class MainView extends Component {
           onLineDraw: this.handleGobanLineDraw
         })
       ),
+
+      h(AnswerOverlay, {status: answerStatus}), // Tsumego answer overlay
 
       h(
         'section',

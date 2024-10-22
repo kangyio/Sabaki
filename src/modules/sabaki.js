@@ -80,6 +80,7 @@ class Sabaki extends EventEmitter {
       showCommentBox: setting.get('view.show_comments'),
       seenAnswerComment: setting.get('view.seen_answer_comment'),
       answerIndicators: setting.get('view.answer_indicators'),
+      answerStatus: null,
       sidebarWidth: setting.get('view.sidebar_width'),
       graphGridSize: null,
       graphNodeSize: null,
@@ -1087,7 +1088,15 @@ class Sabaki extends EventEmitter {
           `${finalAnswer.charAt(0).toUpperCase() + finalAnswer.slice(1)} answer`
         )
 
-        // TODO: Handle answer (e.g., show message, update score, etc.)
+        // Define answer status
+        this.setState({
+          answerStatus: finalAnswer === 'right' ? 'right' : 'wrong'
+        })
+
+        // Clear the overlay after a delay
+        setTimeout(() => {
+          this.setState({answerStatus: null})
+        }, 2000) // 2 seconds delay
 
         // Reset seenAnswerComment for the next problem
         this.setState({seenAnswerComment: 'undefined'})

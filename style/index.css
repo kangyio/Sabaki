@@ -165,7 +165,7 @@ header {
   .scoring #bar, .estimator #bar { background: #C42311; }
   .find #bar { background: #0050C0; }
   .guess #bar { background: #823499; }
-  .tsumego #bar { background: #6abb0d; }
+  .tsumego #bar { background: #66b60b; }
   #bar .bar input {
     box-sizing: border-box;
     height: 32px;
@@ -1430,4 +1430,17 @@ header {
 
 .shudan-vertex .shudan-heat {
   transition: none;
+}
+
+/* Tsumego answer overlay */
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
