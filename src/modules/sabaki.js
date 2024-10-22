@@ -1070,15 +1070,41 @@ class Sabaki extends EventEmitter {
         console.log('Tsumego problem finished')
         let currentNode = tree.get(newPosition)
 
-        if (currentNode.data.BM != null) {
-          console.log('Wrong answer')
-          // TODO: Handle wrong answer (e.g., show message to user, reset problem, etc.)
-        } else if (currentNode.data.TE != null) {
-          console.log('Correct answer')
-          // TODO: Handle correct answer (e.g., show congratulations, move to next problem, etc.)
-        } else {
-          console.log('No right/wrong indication found')
-          // TODO: Handle cases where there's no clear right/wrong indication
+        let comment = currentNode.data.C?.[0]
+        let answerCheck = 'undefined'
+
+        if (currentNode.data.TE != null) {
+          answerCheck = 'right'
+        } else if (currentNode.data.BM != null) {
+          answerCheck = 'wrong'
+        } else if (comment) {
+          let trimmedComment = comment.trim().toUpperCase()
+          if (
+            trimmedComment.startsWith('RIGHT') ||
+            trimmedComment.startsWith('正解')
+          ) {
+            answerCheck = 'right'
+          } else if (
+            trimmedComment.startsWith('WRONG') ||
+            trimmedComment.startsWith('失败')
+          ) {
+            answerCheck = 'wrong'
+          }
+        }
+
+        switch (answerCheck) {
+          case 'right':
+            console.log('Correct answer')
+            // TODO: Handle correct answer
+            break
+          case 'wrong':
+            console.log('Wrong answer')
+            // TODO: Handle wrong answer
+            break
+          case 'undefined':
+            console.log('Undefined answer')
+            // TODO: Handle undefined answer
+            break
         }
       }
     }
