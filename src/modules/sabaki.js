@@ -1044,10 +1044,16 @@ class Sabaki extends EventEmitter {
 
       let vertexKey = vertex.join(',')
       let validMove =
-        vertexKey in board.childrenInfo || vertexKey in board.siblingsInfo
+        vertexKey in board.childrenInfo ||
+        (vertexKey in board.siblingsInfo &&
+          board.siblingsInfo[vertexKey].sign ===
+            board.childrenInfo[Object.keys(board.childrenInfo)[0]]?.sign)
 
       // Wrong Answer
-      if (!validMove) return
+      if (!validMove) {
+        console.log('Invalid move in tsumego mode')
+        return
+      }
 
       let signValue =
         board.childrenInfo[vertexKey]?.sign ||
