@@ -27,8 +27,9 @@ export default class MainView extends Component {
     }
 
     this.handleTsumegoButtonClick = evt => {
-      sabaki.setState({selectedTsumegoAction: evt.action})
-      sabaki.executeTsumegoAction(evt.action)
+      sabaki.setState({selectedTsumegoAction: evt.action}, () => {
+        sabaki.executeTsumegoAction(evt.action)
+      })
     }
 
     this.handleFindButtonClick = evt =>

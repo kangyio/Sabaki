@@ -1045,10 +1045,6 @@ class Sabaki extends EventEmitter {
       this.setState({answerStatus: null})
       if (button !== 0 || board.get(vertex) !== 0) return
 
-      //Implement the logic for tsumego bar buttons
-      let action = this.state.selectedTsumegoAction
-      this.executeTsumegoAction(action)
-
       //Try to identify right or wrong
       let vertexKey = vertex.join(',')
       let validMove =
@@ -1747,6 +1743,9 @@ class Sabaki extends EventEmitter {
   }
 
   executeTsumegoAction(action) {
+    console.log('Executing tsumego action:', action)
+    console.log('Current state:', this.state)
+
     switch (action) {
       case 'hint':
         this.showHint()
