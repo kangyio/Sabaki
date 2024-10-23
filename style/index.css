@@ -171,7 +171,7 @@ header {
     height: 32px;
   }
   #bar .bar button:active {
-    transform: translateY(-46%);
+    transform: translateY(-5%);
   }
   #scoring .result, #estimator .result {
     position: absolute;
@@ -219,6 +219,46 @@ header {
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
+}
+
+#tsumego {
+  color: #333;
+}
+#tsumego ul {
+  display: table;
+  margin: 0 auto;
+  overflow: hidden;
+  list-style: none;
+}
+#tsumego ul li {
+  margin: 0 2px;
+  float: left;
+}
+#tsumego ul li a {
+  position: relative;
+  display: block;
+  height: 50px;  
+  width: 45px;   
+  top: 50%;
+  transform: translateY(-10%);
+}
+.tsumego #tsumego ul li a:hover {
+  background: #59a00a;
+}
+.tsumego #tsumego ul li a:active {
+  background: #4c8908;
+}
+.tsumego #tsumego ul li.selected a {
+  background: #548f09;
+}
+#tsumego ul li a img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;   
+  height: 30px;  
+  margin-left: -15px;  
+  margin-top: -15px;   
 }
 
 #edit {

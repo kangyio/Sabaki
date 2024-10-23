@@ -26,6 +26,11 @@ export default class MainView extends Component {
       sabaki.setState({selectedTool: evt.tool})
     }
 
+    this.handleTsumegoButtonClick = evt => {
+      console.log('Tsumego button clicked:', evt.action)
+      // Implement the logic for hint, solution, and next problem
+    }
+
     this.handleFindButtonClick = evt =>
       sabaki.findMove(evt.step, {
         vertex: this.props.findVertex,
@@ -207,7 +212,8 @@ export default class MainView extends Component {
 
         h(TsumegoBar, {
           mode,
-          treePosition
+          treePosition,
+          onButtonClick: this.handleTsumegoButtonClick
         }),
 
         h(AutoplayBar, {
