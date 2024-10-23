@@ -9,37 +9,54 @@ export default class AnswerOverlay extends Component {
         ? './img/ui/AnimationTick.svg'
         : './img/ui/AnimationCross.svg'
 
-    const backgroundColor = 'rgba(255, 255, 255, 0.5)'
+    const message =
+      status === 'right' ? 'Great job, keep going' : "Uh-oh, it's wrong"
 
-    const containerStyle = {
+    // Nice shade of blue for right answer, nice shade of green for wrong answer
+    const color = status === 'right' ? '#3498db' : '#2ecc71'
+
+    const ribbonStyle = {
       position: 'absolute',
       top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      zIndex: 100,
-      width: '220px',
-      height: '220px',
-      backgroundColor: backgroundColor,
+      left: '0',
+      right: '0',
+      transform: 'translateY(-50%)',
+      backgroundColor: 'rgba(255, 255, 255, 0.8)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      animation: 'pulse 1s ease-in-out infinite'
+      padding: '10px 20px',
+      zIndex: 100
     }
 
-    // Add different border radius based on status
-    containerStyle.borderRadius = status === 'right' ? '50%' : '20px' // 50% for correct is circle, 20px for incorrect is square with rounded corners
+    const contentStyle = {
+      display: 'flex',
+      alignItems: 'center'
+    }
+
+    const textStyle = {
+      marginLeft: '20px',
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: color
+    }
 
     return h(
       'div',
-      {style: containerStyle},
-      h('img', {
-        src: svgSrc,
-        alt: status === 'right' ? 'Correct' : 'Incorrect',
-        style: {
-          width: '180px',
-          height: '180px'
-        }
-      })
+      {style: ribbonStyle},
+      h(
+        'div',
+        {style: contentStyle},
+        h('img', {
+          src: svgSrc,
+          alt: status === 'right' ? 'Correct' : 'Incorrect',
+          style: {
+            width: '50px',
+            height: '50px'
+          }
+        }),
+        h('span', {style: textStyle}, message)
+      )
     )
   }
 }

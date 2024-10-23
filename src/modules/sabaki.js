@@ -1096,7 +1096,7 @@ class Sabaki extends EventEmitter {
         // Clear the overlay after a delay
         setTimeout(() => {
           this.setState({answerStatus: null})
-        }, 2000) // 2 seconds delay
+        }, 1500) // 1.5 seconds delay
 
         // Reset seenAnswerComment for the next problem
         this.setState({seenAnswerComment: 'undefined'})
@@ -1591,6 +1591,7 @@ class Sabaki extends EventEmitter {
     let tree = gameTrees[gameIndex]
 
     this.setCurrentTreePosition(tree, tree.root.id)
+    this.setState({answerStatus: null})
   }
 
   goToEnd() {
@@ -1689,6 +1690,7 @@ class Sabaki extends EventEmitter {
       autoRotateEnabled && (!isMovingToEdge || newIndex !== gameIndex)
 
     this.closeDrawer()
+    this.setState({answerStatus: null})
 
     if (shouldRotate) {
       this.pushBoardTransformation(this.getRandomTransformation())
