@@ -47,6 +47,7 @@ class TsumegoBar extends Component {
         {},
         [
           [t('Hint'), 'hint'],
+          [t('Reset'), 'reset'],
           [t('Previous Problem'), 'previous'],
           [t('Next Problem'), 'next']
         ].map(x => this.renderButton(...x, isSelected(x)))

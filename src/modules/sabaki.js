@@ -1042,81 +1042,82 @@ class Sabaki extends EventEmitter {
         this.setState({blockedGuesses})
       }
     } else if (this.state.mode === 'tsumego') {
-      this.setState({answerStatus: null})
-      if (button !== 0 || board.get(vertex) !== 0) return
-
-      //Try to identify right or wrong
-      let vertexKey = vertex.join(',')
-      let validMove =
-        vertexKey in board.childrenInfo ||
-        (vertexKey in board.siblingsInfo &&
-          board.siblingsInfo[vertexKey].sign ===
-            board.childrenInfo[Object.keys(board.childrenInfo)[0]]?.sign)
-
-      if (!validMove) {
-        // Clear any existing timeout
-        if (this.answerStatusTimeout) {
-          clearTimeout(this.answerStatusTimeout)
-        }
-
-        this.setState({
-          answerStatus: 'wrong',
-          seenAnswerComment: 'wrong'
-        })
-
-        // Set new timeout and store the ID
-        this.answerStatusTimeout = setTimeout(() => {
-          this.setState({answerStatus: null})
-        }, 1500)
-
-        return
-      }
-
-      let signValue =
-        board.childrenInfo[vertexKey]?.sign ||
-        board.siblingsInfo[vertexKey]?.sign
-      let player =
-        typeof signValue === 'number' ? signValue : signValue === 'B' ? 1 : -1
-
-      this.makeMove(vertex, {player: player})
-
-      let newPosition = this.state.treePosition
-      let nextNode = tree.navigate(newPosition, 1, gameCurrents[gameIndex])
-
-      // Get comment data and check for answer
-      let commentData = this.getComment(newPosition)
-      let currentAnswer = this.checkCommentForAnswer(commentData)
-
-      // Update seenAnswerComment if a definitive answer is found
-      if (currentAnswer) {
-        this.setState({seenAnswerComment: currentAnswer})
-      }
-
-      if (nextNode == null) {
-        let finalAnswer =
-          currentAnswer || this.state.seenAnswerComment || 'undefined'
-
-        // Clear any existing timeout
-        if (this.answerStatusTimeout) {
-          clearTimeout(this.answerStatusTimeout)
-        }
-
-        // Define answer status
-        this.setState({
-          answerStatus: finalAnswer === 'right' ? 'right' : 'wrong'
-        })
-
-        // Set new timeout and store the ID
-        this.answerStatusTimeout = setTimeout(() => {
-          this.setState({answerStatus: null})
-        }, 1500)
-
-        // Reset seenAnswerComment for the next problem
-        this.setState({seenAnswerComment: 'undefined'})
-      }
+      this.handleTsumegoMove(
+        vertex,
+        button,
+        board,
+        tree,
+        gameCurrents,
+        gameIndex
+      )
     }
 
     this.events.emit('vertexClick')
+  }
+
+  handleTsumegoMove(vertex, button, board, tree, gameCurrents, gameIndex) {
+    this.setState({answerStatus: null})
+    if (button !== 0 || board.get(vertex) !== 0) return
+
+    if (!this.isValidTsumegoMove(vertex, board)) {
+      this.setTimedAnswerStatus('wrong')
+      return
+    }
+
+    this.processTsumegoMove(vertex, board, tree, gameCurrents, gameIndex)
+  }
+
+  isValidTsumegoMove(vertex, board) {
+    let vertexKey = vertex.join(',')
+    return (
+      vertexKey in board.childrenInfo ||
+      (vertexKey in board.siblingsInfo &&
+        board.siblingsInfo[vertexKey].sign ===
+          board.childrenInfo[Object.keys(board.childrenInfo)[0]]?.sign)
+    )
+  }
+
+  processTsumegoMove(vertex, board, tree, gameCurrents, gameIndex) {
+    let vertexKey = vertex.join(',')
+    let signValue =
+      board.childrenInfo[vertexKey]?.sign || board.siblingsInfo[vertexKey]?.sign
+    let player =
+      typeof signValue === 'number' ? signValue : signValue === 'B' ? 1 : -1
+
+    this.makeMove(vertex, {player: player})
+
+    let newPosition = this.state.treePosition
+    let nextNode = tree.navigate(newPosition, 1, gameCurrents[gameIndex])
+
+    let commentData = this.getComment(newPosition)
+    let currentAnswer = this.checkCommentForAnswer(commentData)
+
+    if (currentAnswer) {
+      this.setState({seenAnswerComment: currentAnswer})
+    }
+
+    if (nextNode == null) {
+      this.handleTsumegoCompletion(currentAnswer)
+    }
+  }
+
+  handleTsumegoCompletion(currentAnswer) {
+    let finalAnswer =
+      currentAnswer || this.state.seenAnswerComment || 'undefined'
+    this.setTimedAnswerStatus(finalAnswer === 'right' ? 'right' : 'wrong')
+    this.setState({seenAnswerComment: 'undefined'})
+  }
+
+  setTimedAnswerStatus(status, duration = 1500) {
+    if (this.answerStatusTimeout) {
+      clearTimeout(this.answerStatusTimeout)
+    }
+
+    this.setState({answerStatus: status})
+
+    this.answerStatusTimeout = setTimeout(() => {
+      this.setState({answerStatus: null})
+    }, duration)
   }
 
   makeMove(vertex, {player = null, generateEngineMove = false} = {}) {
@@ -1755,6 +1756,9 @@ class Sabaki extends EventEmitter {
         break
       case 'next':
         this.goToSiblingGame(1)
+        break
+      case 'reset':
+        this.goToBeginning()
         break
     }
   }
