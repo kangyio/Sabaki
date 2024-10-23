@@ -1041,6 +1041,7 @@ class Sabaki extends EventEmitter {
         this.setState({blockedGuesses})
       }
     } else if (this.state.mode === 'tsumego') {
+      this.setState({answerStatus: null})
       if (button !== 0 || board.get(vertex) !== 0) return
 
       let vertexKey = vertex.join(',')
@@ -1051,7 +1052,17 @@ class Sabaki extends EventEmitter {
             board.childrenInfo[Object.keys(board.childrenInfo)[0]]?.sign)
 
       if (!validMove) {
-        console.log('Invalid move in tsumego mode')
+        // Treat invalid move as a wrong answer
+        this.setState({
+          answerStatus: 'wrong',
+          seenAnswerComment: 'wrong'
+        })
+
+        // Clear the overlay after a delay
+        setTimeout(() => {
+          this.setState({answerStatus: null})
+        }, 1500) // 1.5 seconds delay
+
         return
       }
 

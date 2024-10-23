@@ -13,7 +13,7 @@ export default class AnswerOverlay extends Component {
       status === 'right' ? 'Great job, keep going' : "Uh-oh, it's wrong"
 
     // Nice shade of blue for right answer, nice shade of green for wrong answer
-    const color = status === 'right' ? '#3498db' : '#2ecc71'
+    const color = status === 'right' ? '#3498db' : '#ffb01d'
 
     const ribbonStyle = {
       position: 'absolute',
