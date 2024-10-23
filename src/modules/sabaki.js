@@ -1052,16 +1052,20 @@ class Sabaki extends EventEmitter {
             board.childrenInfo[Object.keys(board.childrenInfo)[0]]?.sign)
 
       if (!validMove) {
-        // Treat invalid move as a wrong answer
+        // Clear any existing timeout
+        if (this.answerStatusTimeout) {
+          clearTimeout(this.answerStatusTimeout)
+        }
+
         this.setState({
           answerStatus: 'wrong',
           seenAnswerComment: 'wrong'
         })
 
-        // Clear the overlay after a delay
-        setTimeout(() => {
+        // Set new timeout and store the ID
+        this.answerStatusTimeout = setTimeout(() => {
           this.setState({answerStatus: null})
-        }, 1500) // 1.5 seconds delay
+        }, 1500)
 
         return
       }
@@ -1090,24 +1094,23 @@ class Sabaki extends EventEmitter {
       console.log('Current answer:', currentAnswer)
 
       if (nextNode == null) {
-        console.log('Tsumego problem finished')
-
         let finalAnswer =
           currentAnswer || this.state.seenAnswerComment || 'undefined'
 
-        console.log(
-          `${finalAnswer.charAt(0).toUpperCase() + finalAnswer.slice(1)} answer`
-        )
+        // Clear any existing timeout
+        if (this.answerStatusTimeout) {
+          clearTimeout(this.answerStatusTimeout)
+        }
 
         // Define answer status
         this.setState({
           answerStatus: finalAnswer === 'right' ? 'right' : 'wrong'
         })
 
-        // Clear the overlay after a delay
-        setTimeout(() => {
+        // Set new timeout and store the ID
+        this.answerStatusTimeout = setTimeout(() => {
           this.setState({answerStatus: null})
-        }, 1500) // 1.5 seconds delay
+        }, 1500)
 
         // Reset seenAnswerComment for the next problem
         this.setState({seenAnswerComment: 'undefined'})
