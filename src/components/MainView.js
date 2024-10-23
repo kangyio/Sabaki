@@ -27,8 +27,8 @@ export default class MainView extends Component {
     }
 
     this.handleTsumegoButtonClick = evt => {
-      console.log('Tsumego button clicked:', evt.action)
-      // Implement the logic for hint, solution, and next problem
+      sabaki.setState({selectedTsumegoAction: evt.action})
+      sabaki.executeTsumegoAction(evt.action)
     }
 
     this.handleFindButtonClick = evt =>

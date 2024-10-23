@@ -53,6 +53,7 @@ class Sabaki extends EventEmitter {
       findVertex: null,
       deadStones: [],
       blockedGuesses: [],
+      selectedTsumegoAction: null,
 
       // Goban
 
@@ -1044,6 +1045,11 @@ class Sabaki extends EventEmitter {
       this.setState({answerStatus: null})
       if (button !== 0 || board.get(vertex) !== 0) return
 
+      //Implement the logic for tsumego bar buttons
+      let action = this.state.selectedTsumegoAction
+      this.executeTsumegoAction(action)
+
+      //Try to identify right or wrong
       let vertexKey = vertex.join(',')
       let validMove =
         vertexKey in board.childrenInfo ||
@@ -1089,9 +1095,6 @@ class Sabaki extends EventEmitter {
       if (currentAnswer) {
         this.setState({seenAnswerComment: currentAnswer})
       }
-
-      console.log('Comment data:', commentData)
-      console.log('Current answer:', currentAnswer)
 
       if (nextNode == null) {
         let finalAnswer =
@@ -1741,6 +1744,20 @@ class Sabaki extends EventEmitter {
   stopAutoscrolling() {
     clearTimeout(this.autoscrollId)
     this.autoscrollId = null
+  }
+
+  executeTsumegoAction(action) {
+    switch (action) {
+      case 'hint':
+        this.showHint()
+        break
+      case 'previous':
+        this.goToSiblingGame(-1)
+        break
+      case 'next':
+        this.goToSiblingGame(1)
+        break
+    }
   }
 
   // Engine Management
