@@ -1122,56 +1122,81 @@ class Sabaki extends EventEmitter {
 
   showHint() {
     const {gameTrees, gameIndex, treePosition} = this.state
-    const tree = gameTrees[gameIndex]
-    const currentNode = tree.get(treePosition)
+    const currentTree = gameTrees[gameIndex]
+    const root = currentTree.root
 
     console.log('Current position:', treePosition)
+    console.log('Root node:', root)
 
-    const results = this.findCorrectMoves(
-      currentNode,
-      tree,
-      this.state.seenAnswerComment
-    )
+    const correctPaths = this.findCorrectPaths(root, currentTree)
+    console.log('Correct paths:', correctPaths)
 
-    if (results.length > 0) {
-      console.log(
-        'Show hint positions:',
-        results.map(result => result.nodeId).join(', ')
+    const currentNode = currentTree.get(treePosition)
+    console.log('Current node:', currentNode)
+
+    if (currentNode.children) {
+      console.log('Current node children:', currentNode.children)
+
+      const correctNextMoves = currentNode.children.filter(child =>
+        correctPaths.some(path => path.includes(child.id))
       )
+
+      console.log('Filtered correct next moves:', correctNextMoves)
+
+      if (correctNextMoves.length > 0) {
+        console.log(
+          'Correct next moves:',
+          correctNextMoves.map(child => child.id).join(', ')
+        )
+      } else {
+        console.log('No correct moves found')
+      }
     } else {
-      console.log('No hint available')
+      console.log('Current node has no children')
     }
   }
 
-  findCorrectMoves(node, tree, seenAnswerComment) {
-    if (!node || !node.children) return []
+  findCorrectPaths(node, tree, path = [], isCorrectPath = false) {
+    let correctPaths = []
+    path = [...path, node.id]
 
-    let correctMoves = []
+    console.log('Checking node:', node)
+    console.log('Current path:', path)
 
-    for (let child of node.children) {
-      const childNode = tree.get(child.id)
-      if (!childNode) continue
+    const comment = this.getComment(node.id)
+    const answerStatus = this.checkCommentForAnswer(comment)
 
-      const commentData = this.getComment(child.id)
-      let answerStatus = this.checkCommentForAnswer(commentData)
+    console.log(`Node ${node.id} comment:`, comment)
+    console.log(`Node ${node.id} answer status:`, answerStatus)
 
-      if (seenAnswerComment === 'right') {
-        answerStatus = 'right'
-      }
-
-      if (answerStatus === 'right') {
-        correctMoves.push({nodeId: child.id})
-      } else {
-        // Recursively search deeper
-        const results = this.findCorrectMoves(childNode, tree, answerStatus)
-        if (results.length > 0) {
-          // If correct moves are found deeper in this branch, add the current child
-          correctMoves.push({nodeId: child.id})
-        }
-      }
+    if (answerStatus === 'right' || isCorrectPath) {
+      correctPaths.push(path)
+      isCorrectPath = true
+      console.log('Found correct path:', path)
+    } else if (answerStatus === 'wrong') {
+      isCorrectPath = false
+      console.log('Found wrong path:', path)
+      return [] // Stop exploring this branch
     }
 
-    return correctMoves
+    if (node.children && node.children.length > 0) {
+      console.log(`Node ${node.id} children:`, node.children)
+      for (let child of node.children) {
+        const childNode = tree.get(child.id)
+        console.log(`Child node ${child.id}:`, childNode)
+        const childPaths = this.findCorrectPaths(
+          childNode,
+          tree,
+          path,
+          isCorrectPath
+        )
+        correctPaths = correctPaths.concat(childPaths)
+      }
+    } else {
+      console.log(`Node ${node.id} has no children`)
+    }
+
+    return correctPaths
   }
 
   makeMove(vertex, {player = null, generateEngineMove = false} = {}) {
