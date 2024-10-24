@@ -1126,33 +1126,18 @@ class Sabaki extends EventEmitter {
     const root = currentTree.root
 
     console.log('Current position:', treePosition)
-    console.log('Root node:', root)
 
     const correctPaths = this.findCorrectPaths(root, currentTree)
-    console.log('Correct paths:', correctPaths)
-
     const currentNode = currentTree.get(treePosition)
-    console.log('Current node:', currentNode)
 
-    if (currentNode.children) {
-      console.log('Current node children:', currentNode.children)
+    const correctNextMoves = currentNode.children
+      .filter(child => correctPaths.some(path => path.includes(child.id)))
+      .map(child => child.id)
 
-      const correctNextMoves = currentNode.children.filter(child =>
-        correctPaths.some(path => path.includes(child.id))
-      )
-
-      console.log('Filtered correct next moves:', correctNextMoves)
-
-      if (correctNextMoves.length > 0) {
-        console.log(
-          'Correct next moves:',
-          correctNextMoves.map(child => child.id).join(', ')
-        )
-      } else {
-        console.log('No correct moves found')
-      }
+    if (correctNextMoves.length > 0) {
+      console.log('Correct next moves:', correctNextMoves.join(', '))
     } else {
-      console.log('Current node has no children')
+      console.log('No correct moves found')
     }
   }
 
@@ -1160,30 +1145,22 @@ class Sabaki extends EventEmitter {
     let correctPaths = []
     path = [...path, node.id]
 
-    console.log('Checking node:', node)
-    console.log('Current path:', path)
-
     const comment = this.getComment(node.id)
     const answerStatus = this.checkCommentForAnswer(comment)
 
-    console.log(`Node ${node.id} comment:`, comment)
-    console.log(`Node ${node.id} answer status:`, answerStatus)
-
-    if (answerStatus === 'right' || isCorrectPath) {
-      correctPaths.push(path)
+    if (answerStatus === 'right') {
       isCorrectPath = true
-      console.log('Found correct path:', path)
+      correctPaths.push(path)
     } else if (answerStatus === 'wrong') {
       isCorrectPath = false
-      console.log('Found wrong path:', path)
       return [] // Stop exploring this branch
+    } else if (isCorrectPath) {
+      correctPaths.push(path)
     }
 
     if (node.children && node.children.length > 0) {
-      console.log(`Node ${node.id} children:`, node.children)
       for (let child of node.children) {
         const childNode = tree.get(child.id)
-        console.log(`Child node ${child.id}:`, childNode)
         const childPaths = this.findCorrectPaths(
           childNode,
           tree,
@@ -1192,8 +1169,6 @@ class Sabaki extends EventEmitter {
         )
         correctPaths = correctPaths.concat(childPaths)
       }
-    } else {
-      console.log(`Node ${node.id} has no children`)
     }
 
     return correctPaths
