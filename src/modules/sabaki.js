@@ -1120,6 +1120,60 @@ class Sabaki extends EventEmitter {
     }, duration)
   }
 
+  showHint() {
+    const {gameTrees, gameIndex, treePosition} = this.state
+    const tree = gameTrees[gameIndex]
+    const currentNode = tree.get(treePosition)
+
+    console.log('Current position:', treePosition)
+
+    const results = this.findCorrectMoves(
+      currentNode,
+      tree,
+      this.state.seenAnswerComment
+    )
+
+    if (results.length > 0) {
+      console.log(
+        'Show hint positions:',
+        results.map(result => result.nodeId).join(', ')
+      )
+    } else {
+      console.log('No hint available')
+    }
+  }
+
+  findCorrectMoves(node, tree, seenAnswerComment) {
+    if (!node || !node.children) return []
+
+    let correctMoves = []
+
+    for (let child of node.children) {
+      const childNode = tree.get(child.id)
+      if (!childNode) continue
+
+      const commentData = this.getComment(child.id)
+      let answerStatus = this.checkCommentForAnswer(commentData)
+
+      if (seenAnswerComment === 'right') {
+        answerStatus = 'right'
+      }
+
+      if (answerStatus === 'right') {
+        correctMoves.push({nodeId: child.id})
+      } else {
+        // Recursively search deeper
+        const results = this.findCorrectMoves(childNode, tree, answerStatus)
+        if (results.length > 0) {
+          // If correct moves are found deeper in this branch, add the current child
+          correctMoves.push({nodeId: child.id})
+        }
+      }
+    }
+
+    return correctMoves
+  }
+
   makeMove(vertex, {player = null, generateEngineMove = false} = {}) {
     if (!['play', 'autoplay', 'guess', 'tsumego'].includes(this.state.mode)) {
       this.closeDrawer()
@@ -1744,9 +1798,6 @@ class Sabaki extends EventEmitter {
   }
 
   executeTsumegoAction(action) {
-    console.log('Executing tsumego action:', action)
-    console.log('Current state:', this.state)
-
     switch (action) {
       case 'hint':
         this.showHint()
