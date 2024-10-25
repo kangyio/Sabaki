@@ -862,36 +862,7 @@ exports.get = function(props = {}) {
           label: i18n.t('menu.developer', 'Console &Log'),
           accelerator: 'F12',
           click: () => {
-            const state = sabaki.state
-            const currentTree = state.gameTrees[state.gameIndex]
-            const root = currentTree.root
-            console.log('currentNode', currentTree.get(state.treePosition))
-            console.log('Starting tree traversal from root node')
-
-            function traverseTree(node, depth = 0) {
-              const indent = '  '.repeat(depth)
-              const moveInfo = node.data.B
-                ? `B[${node.data.B[0]}]`
-                : node.data.W
-                ? `W[${node.data.W[0]}]`
-                : 'No move'
-              const comment = sabaki.getComment(node.id)
-              console.log(`${indent}Node ${node.id}: ${moveInfo}`)
-              console.log(`${indent}Comment: ${JSON.stringify(comment)}`)
-
-              if (node.children && node.children.length > 0) {
-                console.log(`${indent}Children:`)
-                node.children.forEach((child, index) => {
-                  console.log(`${indent}  Branch ${index + 1}:`)
-                  traverseTree(currentTree.get(child.id), depth + 2)
-                })
-              } else {
-                console.log(`${indent}No children (leaf node)`)
-              }
-            }
-
-            traverseTree(root)
-            console.log('Tree traversal complete')
+            console.log(sabaki.state.showTsumegoHint)
           },
           neverDisable: true
         },

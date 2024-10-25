@@ -206,6 +206,7 @@ let defaults = {
   'view.show_move_numbers': false,
   'view.show_next_moves': true,
   'view.show_siblings': true,
+  'view.show_tsumego_hint': true,
   'view.show_winrategraph': true,
   'view.sidebar_width': 200,
   'view.sidebar_minwidth': 100,

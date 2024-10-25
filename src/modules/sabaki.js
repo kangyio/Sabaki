@@ -67,6 +67,8 @@ class Sabaki extends EventEmitter {
       showMoveNumbers: null,
       showNextMoves: null,
       showSiblings: null,
+      showTsumegoHint: null,
+      tsumegoHintPosition: [],
       fuzzyStonePlacement: null,
       animateStonePlacement: null,
       boardTransformation: '',
@@ -220,6 +222,7 @@ class Sabaki extends EventEmitter {
       'view.show_move_numbers': 'showMoveNumbers',
       'view.show_next_moves': 'showNextMoves',
       'view.show_siblings': 'showSiblings',
+      'view.show_tsumego_hint': 'showTsumegoHint',
       'view.coordinates_type': 'coordinatesType',
       'view.fuzzy_stone_placement': 'fuzzyStonePlacement',
       'view.animated_stone_placement': 'animateStonePlacement',
@@ -1056,7 +1059,7 @@ class Sabaki extends EventEmitter {
   }
 
   handleTsumegoMove(vertex, button, board, tree, gameCurrents, gameIndex) {
-    this.setState({answerStatus: null})
+    this.setState({answerStatus: null, showTsumegoHint: false})
     if (button !== 0 || board.get(vertex) !== 0) return
 
     if (!this.isValidTsumegoMove(vertex, board)) {
@@ -1125,8 +1128,6 @@ class Sabaki extends EventEmitter {
     const currentTree = gameTrees[gameIndex]
     const root = currentTree.root
 
-    console.log('Current position:', treePosition)
-
     const correctPaths = this.findCorrectPaths(root, currentTree)
     const currentNode = currentTree.get(treePosition)
 
@@ -1134,11 +1135,10 @@ class Sabaki extends EventEmitter {
       .filter(child => correctPaths.some(path => path.includes(child.id)))
       .map(child => child.id)
 
-    if (correctNextMoves.length > 0) {
-      console.log('Correct next moves:', correctNextMoves.join(', '))
-    } else {
-      console.log('No correct moves found')
-    }
+    this.setState({
+      showTsumegoHint: true,
+      tsumegoHintPosition: correctNextMoves // Ensure this is set
+    })
   }
 
   findCorrectPaths(node, tree, path = [], isCorrectPath = false) {

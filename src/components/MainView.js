@@ -105,6 +105,7 @@ export default class MainView extends Component {
       showMoveNumbers,
       showNextMoves,
       showSiblings,
+      showTsumegoHint,
       fuzzyStonePlacement,
       animateStonePlacement,
       boardTransformation,
@@ -164,6 +165,7 @@ export default class MainView extends Component {
           showMoveNumbers: mode !== 'edit' && showMoveNumbers,
           showNextMoves: !['guess', 'tsumego'].includes(mode) && showNextMoves,
           showSiblings: !['guess', 'tsumego'].includes(mode) && showSiblings,
+          showTsumegoHint: mode === 'tsumego' && showTsumegoHint,
           fuzzyStonePlacement,
           animateStonePlacement,
 

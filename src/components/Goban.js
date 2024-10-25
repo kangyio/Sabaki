@@ -3,6 +3,7 @@ import {h, Component} from 'preact'
 import classNames from 'classnames'
 import sgf from '@sabaki/sgf'
 import {BoundedGoban} from '@sabaki/shudan'
+import sabaki from '../modules/sabaki.js'
 
 import i18n from '../i18n.js'
 import * as gametree from '../modules/gametree.js'
@@ -229,6 +230,8 @@ export default class Goban extends Component {
       showMoveNumbers = false,
       showNextMoves = true,
       showSiblings = true,
+      showTsumegoHint = false,
+      tsumegoHintPosition = sabaki.state.tsumegoHintPosition,
       fuzzyStonePlacement = true,
       animateStonePlacement = true,
 
@@ -350,6 +353,37 @@ export default class Goban extends Component {
           ghostStoneMap[y][x] = {sign, type: showMoveColorization ? type : null}
         }
       }
+    }
+
+    const sgfToCoords = sgfCoord => {
+      if (!sgfCoord || sgfCoord.length !== 2) return null
+      return [sgfCoord.charCodeAt(0) - 97, sgfCoord.charCodeAt(1) - 97]
+    }
+
+    if (
+      showTsumegoHint &&
+      tsumegoHintPosition &&
+      tsumegoHintPosition.length > 0
+    ) {
+      ghostStoneMap = board.signMap.map(row => row.map(_ => null))
+
+      tsumegoHintPosition.forEach(moveId => {
+        const node = gameTree.get(moveId)
+        if (node && node.data) {
+          let sgfCoord = node.data.B?.[0] || node.data.W?.[0]
+          if (sgfCoord) {
+            const coords = sgfToCoords(sgfCoord)
+            if (coords) {
+              const [x, y] = coords
+              const sign = node.data.B ? 1 : -1 // 1 for black, -1 for white
+              ghostStoneMap[y][x] = {
+                sign,
+                type: 'hint'
+              }
+            }
+          }
+        }
+      })
     }
 
     // Draw move numbers

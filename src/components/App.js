@@ -345,6 +345,7 @@ class App extends Component {
         showMoveColorization: state.showMoveColorization,
         showNextMoves: state.showNextMoves,
         showSiblings: state.showSiblings,
+        showTsumegoHint: state.showTsumegoHint,
         showWinrateGraph: state.showWinrateGraph,
         showGameGraph: state.showGameGraph,
         showCommentBox: state.showCommentBox,
