@@ -355,10 +355,14 @@ export default class Goban extends Component {
       }
     }
 
+    // Convert sgf coordinates to goban coordinates for tsumego hint
+
     const sgfToCoords = sgfCoord => {
       if (!sgfCoord || sgfCoord.length !== 2) return null
       return [sgfCoord.charCodeAt(0) - 97, sgfCoord.charCodeAt(1) - 97]
     }
+
+    // If tsumego hint position, show tsumego hint ghost stones
 
     if (
       showTsumegoHint &&
@@ -375,15 +379,25 @@ export default class Goban extends Component {
             const coords = sgfToCoords(sgfCoord)
             if (coords) {
               const [x, y] = coords
-              const sign = node.data.B ? 1 : -1 // 1 for black, -1 for white
               ghostStoneMap[y][x] = {
-                sign,
-                type: 'hint'
+                sign: node.data.B ? 1 : -1, // Keep this for stone color
+                type: 'good'
               }
             }
           }
         }
       })
+    }
+
+    // If no tsumego hint position, show next moves
+    else if (showTsumegoHint && tsumegoHintPosition.length === 0) {
+      ghostStoneMap = board.signMap.map(row => row.map(_ => null))
+      for (let v in board.childrenInfo) {
+        let [x, y] = v.split(',').map(x => +x)
+        let {sign, type} = board.childrenInfo[v]
+
+        ghostStoneMap[y][x] = {sign, type: 'bad'}
+      }
     }
 
     // Draw move numbers
