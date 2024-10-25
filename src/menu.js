@@ -553,6 +553,16 @@ exports.get = function(props = {}) {
         },
         {type: 'separator'},
         {
+          label: i18n.t('menu.tools', 'Tsumego Auto Response'),
+          type: 'checkbox',
+          checked: setting.get('tsumego.auto_response'),
+          click: () =>
+            setting.set(
+              'tsumego.auto_response',
+              !setting.get('tsumego.auto_response')
+            )
+        },
+        {
           label: i18n.t('menu.tools', 'Clean &Markup…'),
           click: () => sabaki.openDrawer('cleanmarkup')
         },
@@ -862,7 +872,7 @@ exports.get = function(props = {}) {
           label: i18n.t('menu.developer', 'Console &Log'),
           accelerator: 'F12',
           click: () => {
-            console.log(sabaki.state.showTsumegoHint)
+            console.log(setting.get('tsumego.auto_response'))
           },
           neverDisable: true
         },
