@@ -69,6 +69,7 @@ class Sabaki extends EventEmitter {
       showSiblings: null,
       showTsumegoHint: null,
       tsumegoHintPosition: [],
+      tsumegoAutoResponse: setting.get('tsumego.auto_response'),
       fuzzyStonePlacement: null,
       animateStonePlacement: null,
       boardTransformation: '',
@@ -223,6 +224,7 @@ class Sabaki extends EventEmitter {
       'view.show_next_moves': 'showNextMoves',
       'view.show_siblings': 'showSiblings',
       'view.show_tsumego_hint': 'showTsumegoHint',
+      'tsumego.auto_response': 'tsumegoAutoResponse',
       'view.coordinates_type': 'coordinatesType',
       'view.fuzzy_stone_placement': 'fuzzyStonePlacement',
       'view.animated_stone_placement': 'animateStonePlacement',
@@ -1068,6 +1070,105 @@ class Sabaki extends EventEmitter {
     }
 
     this.processTsumegoMove(vertex, board, tree, gameCurrents, gameIndex)
+
+    // Add auto-response logic here
+    console.log('Checking for auto-response')
+    if (this.state.tsumegoAutoResponse) {
+      console.log('Auto-response is enabled, playing move')
+      this.playTsumegoAutoResponse()
+    }
+  }
+
+  playTsumegoAutoResponse() {
+    console.log('Entering playTsumegoAutoResponse')
+    this.showHint()
+    if (
+      this.state.tsumegoHintPosition &&
+      this.state.tsumegoHintPosition.length > 0
+    ) {
+      console.log('Hint available, playing move')
+      const nextMove = this.state.tsumegoHintPosition[0]
+      // Add a small delay before playing the move
+      setTimeout(() => {
+        this.playTsumegoMove(nextMove)
+      }, 100)
+    } else {
+      console.log('No hint available, ending auto-response')
+    }
+    this.setState({showTsumegoHint: false})
+  }
+
+  playNextAvailableMove() {
+    console.log('Entering playNextAvailableMove')
+    const {gameTree} = this.inferredState
+    const {treePosition} = this.state
+
+    if (!gameTree) {
+      console.error('Game tree is undefined')
+      return
+    }
+
+    const node = gameTree.get(treePosition)
+
+    if (!node) {
+      console.error('Current node is undefined')
+      return
+    }
+
+    console.log('Current node:', node)
+
+    if (node.children && node.children.length > 0) {
+      console.log('Playing next available move')
+      const nextMove = node.children[0]
+      this.playTsumegoMove(nextMove.id)
+    } else {
+      console.log('No more moves available, calling handleTsumegoCompletion')
+      this.handleTsumegoCompletion()
+    }
+  }
+
+  playTsumegoMove(treeNodeNumber) {
+    console.log(`Playing tsumego move for tree node: ${treeNodeNumber}`)
+    const {gameTree, board} = this.inferredState
+    const node = gameTree.get(treeNodeNumber)
+
+    if (!node || !node.data) {
+      console.error('Invalid tree node or node data')
+      return
+    }
+
+    let sgfCoord = node.data.B?.[0] || node.data.W?.[0]
+    if (!sgfCoord) {
+      console.error('No move found in node data')
+      return
+    }
+
+    const color = node.data.B ? 'B' : 'W'
+    const sign = color === 'B' ? 1 : -1
+
+    console.log(`Move color: ${color}, SGF coordinate: ${sgfCoord}`)
+
+    const vertex = sgf.parseVertex(sgfCoord)
+    console.log(`Parsed vertex: ${vertex}`)
+
+    if (!vertex || vertex[0] === -1) {
+      console.error('Invalid vertex parsed')
+      return
+    }
+
+    const {pass, capturing, suicide} = board.analyzeMove(sign, vertex)
+
+    // Use makeMove instead of manually modifying the game tree
+    this.makeMove(vertex, {player: sign})
+
+    if (pass) {
+      sound.playPass()
+    } else {
+      sound.playPachi()
+      if (capturing || suicide) sound.playCapture()
+    }
+
+    console.log('Tsumego move played successfully')
   }
 
   isValidTsumegoMove(vertex, board) {
@@ -1139,6 +1240,8 @@ class Sabaki extends EventEmitter {
       showTsumegoHint: true,
       tsumegoHintPosition: correctNextMoves // Ensure this is set
     })
+    console.log('current tree position', this.state.treePosition)
+    console.log('tsumegoHintPosition', this.state.tsumegoHintPosition)
   }
 
   findCorrectPaths(node, tree, path = [], isCorrectPath = false) {
@@ -1810,6 +1913,7 @@ class Sabaki extends EventEmitter {
         break
       case 'reset':
         this.goToBeginning()
+        this.setState({showTsumegoHint: false})
         break
     }
   }

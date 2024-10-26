@@ -872,7 +872,7 @@ exports.get = function(props = {}) {
           label: i18n.t('menu.developer', 'Console &Log'),
           accelerator: 'F12',
           click: () => {
-            console.log(setting.get('tsumego.auto_response'))
+            console.log(sabaki.state.tsumegoAutoResponse)
           },
           neverDisable: true
         },
