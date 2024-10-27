@@ -1069,61 +1069,56 @@ class Sabaki extends EventEmitter {
       return
     }
 
-    this.processTsumegoMove(vertex, board, tree, gameCurrents, gameIndex)
+    const {nextNode, currentAnswer} = this.processTsumegoMove(
+      vertex,
+      board,
+      tree,
+      gameCurrents,
+      gameIndex
+    )
 
-    // Add auto-response logic here
-    console.log('Checking for auto-response')
-    if (this.state.tsumegoAutoResponse) {
+    if (nextNode == null) {
+      this.handleTsumegoCompletion(currentAnswer)
+    } else if (this.state.tsumegoAutoResponse) {
       console.log('Auto-response is enabled, playing move')
-      this.playTsumegoAutoResponse()
+      this.playTsumegoAutoResponse(tree, gameCurrents, gameIndex)
     }
   }
 
-  playTsumegoAutoResponse() {
+  playTsumegoAutoResponse(tree, gameCurrents, gameIndex) {
     console.log('Entering playTsumegoAutoResponse')
     this.showHint()
+
+    const playMove = moveFunction => {
+      setTimeout(() => {
+        moveFunction()
+        this.checkTsumegoCompletion(tree, gameCurrents, gameIndex)
+      }, 200)
+    }
+
     if (
       this.state.tsumegoHintPosition &&
       this.state.tsumegoHintPosition.length > 0
     ) {
       console.log('Hint available, playing move')
       const nextMove = this.state.tsumegoHintPosition[0]
-      // Add a small delay before playing the move
-      setTimeout(() => {
-        this.playTsumegoMove(nextMove)
-      }, 100)
+      playMove(() => this.playTsumegoMove(nextMove))
     } else {
-      console.log('No hint available, ending auto-response')
+      console.log('No hint available, playing next available move')
+      playMove(() => this.goStep(1))
     }
+
     this.setState({showTsumegoHint: false})
   }
 
-  playNextAvailableMove() {
-    console.log('Entering playNextAvailableMove')
-    const {gameTree} = this.inferredState
-    const {treePosition} = this.state
+  checkTsumegoCompletion(tree, gameCurrents, gameIndex) {
+    const newPosition = this.state.treePosition
+    const nextNode = tree.navigate(newPosition, 1, gameCurrents[gameIndex])
+    const commentData = this.getComment(newPosition)
+    const currentAnswer = this.checkCommentForAnswer(commentData)
 
-    if (!gameTree) {
-      console.error('Game tree is undefined')
-      return
-    }
-
-    const node = gameTree.get(treePosition)
-
-    if (!node) {
-      console.error('Current node is undefined')
-      return
-    }
-
-    console.log('Current node:', node)
-
-    if (node.children && node.children.length > 0) {
-      console.log('Playing next available move')
-      const nextMove = node.children[0]
-      this.playTsumegoMove(nextMove.id)
-    } else {
-      console.log('No more moves available, calling handleTsumegoCompletion')
-      this.handleTsumegoCompletion()
+    if (nextNode == null) {
+      this.handleTsumegoCompletion(currentAnswer)
     }
   }
 
@@ -1200,9 +1195,7 @@ class Sabaki extends EventEmitter {
       this.setState({seenAnswerComment: currentAnswer})
     }
 
-    if (nextNode == null) {
-      this.handleTsumegoCompletion(currentAnswer)
-    }
+    return {nextNode, currentAnswer}
   }
 
   handleTsumegoCompletion(currentAnswer) {
