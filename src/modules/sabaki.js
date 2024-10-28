@@ -1080,13 +1080,11 @@ class Sabaki extends EventEmitter {
     if (nextNode == null) {
       this.handleTsumegoCompletion(currentAnswer)
     } else if (this.state.tsumegoAutoResponse) {
-      console.log('Auto-response is enabled, playing move')
       this.playTsumegoAutoResponse(tree, gameCurrents, gameIndex)
     }
   }
 
   playTsumegoAutoResponse(tree, gameCurrents, gameIndex) {
-    console.log('Entering playTsumegoAutoResponse')
     this.showHint()
 
     const playMove = moveFunction => {
@@ -1100,11 +1098,10 @@ class Sabaki extends EventEmitter {
       this.state.tsumegoHintPosition &&
       this.state.tsumegoHintPosition.length > 0
     ) {
-      console.log('Hint available, playing move')
       const nextMove = this.state.tsumegoHintPosition[0]
+      console.log('Playing tsumego move for tree node:', nextMove)
       playMove(() => this.playTsumegoMove(nextMove))
     } else {
-      console.log('No hint available, playing next available move')
       playMove(() => this.goStep(1))
     }
 
@@ -1123,7 +1120,6 @@ class Sabaki extends EventEmitter {
   }
 
   playTsumegoMove(treeNodeNumber) {
-    console.log(`Playing tsumego move for tree node: ${treeNodeNumber}`)
     const {gameTree, board} = this.inferredState
     const node = gameTree.get(treeNodeNumber)
 
@@ -1141,10 +1137,7 @@ class Sabaki extends EventEmitter {
     const color = node.data.B ? 'B' : 'W'
     const sign = color === 'B' ? 1 : -1
 
-    console.log(`Move color: ${color}, SGF coordinate: ${sgfCoord}`)
-
     const vertex = sgf.parseVertex(sgfCoord)
-    console.log(`Parsed vertex: ${vertex}`)
 
     if (!vertex || vertex[0] === -1) {
       console.error('Invalid vertex parsed')
@@ -1162,8 +1155,6 @@ class Sabaki extends EventEmitter {
       sound.playPachi()
       if (capturing || suicide) sound.playCapture()
     }
-
-    console.log('Tsumego move played successfully')
   }
 
   isValidTsumegoMove(vertex, board) {
