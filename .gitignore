@@ -9,3 +9,5 @@ bundle.js.map
 
 *.pdn
 *.vbs
+.aider*
+.env
