@@ -1899,6 +1899,21 @@ class Sabaki extends EventEmitter {
         this.goToBeginning()
         this.setState({showTsumegoHint: false})
         break
+      case 'randomRotate':
+        setting.get('view.auto_random_rotate')
+          ? this.setBoardTransformation('')
+          : this.pushBoardTransformation(this.getRandomTransformation())
+        setting.set(
+          'view.auto_random_rotate',
+          !setting.get('view.auto_random_rotate')
+        )
+        break
+      case 'autoResponse':
+        setting.set(
+          'tsumego.auto_response',
+          !setting.get('tsumego.auto_response')
+        )
+        break
     }
   }
 

@@ -553,16 +553,6 @@ exports.get = function(props = {}) {
         },
         {type: 'separator'},
         {
-          label: i18n.t('menu.tools', 'Tsumego Auto Response'),
-          type: 'checkbox',
-          checked: setting.get('tsumego.auto_response'),
-          click: () =>
-            setting.set(
-              'tsumego.auto_response',
-              !setting.get('tsumego.auto_response')
-            )
-        },
-        {
           label: i18n.t('menu.tools', 'Clean &Markup…'),
           click: () => sabaki.openDrawer('cleanmarkup')
         },
@@ -798,11 +788,17 @@ exports.get = function(props = {}) {
               label: i18n.t('menu.tools', 'Auto Random Rotation'),
               type: 'checkbox',
               checked: setting.get('view.auto_random_rotate'),
-              click: () =>
+              click: () => {
+                setting.get('view.auto_random_rotate')
+                  ? sabaki.setBoardTransformation('')
+                  : sabaki.pushBoardTransformation(
+                      sabaki.getRandomTransformation()
+                    )
                 setting.set(
                   'view.auto_random_rotate',
                   !setting.get('view.auto_random_rotate')
                 )
+              }
             }
           ]
         }
