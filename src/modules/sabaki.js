@@ -1098,7 +1098,10 @@ class Sabaki extends EventEmitter {
       this.state.tsumegoHintPosition &&
       this.state.tsumegoHintPosition.length > 0
     ) {
-      const nextMove = this.state.tsumegoHintPosition[0]
+      const randomIndex = Math.floor(
+        Math.random() * this.state.tsumegoHintPosition.length
+      )
+      const nextMove = this.state.tsumegoHintPosition[randomIndex]
       console.log('Playing tsumego move for tree node:', nextMove)
       playMove(() => this.playTsumegoMove(nextMove))
     } else {
