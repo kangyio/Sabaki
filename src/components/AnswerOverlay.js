@@ -6,8 +6,8 @@ export default class AnswerOverlay extends Component {
 
     const svgSrc =
       status === 'right'
-        ? './img/ui/AnimationTick.svg'
-        : './img/ui/AnimationCross.svg'
+        ? `./img/ui/AnimationTick.svg`
+        : `./img/ui/AnimationCross.svg`
 
     const message =
       status === 'right' ? 'Great job, keep going' : "Uh-oh, it's wrong"
