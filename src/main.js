@@ -73,12 +73,14 @@ function newWindow(path) {
 
   window.loadURL(`file://${resolve(__dirname, '../index.html')}`)
 
+/*
   // Open devtools if in dev mode
   if (isDev) {
     window.webContents.openDevTools()
   }
 
   return window
+*/
 }
 
 function buildMenu(props = {}) {
