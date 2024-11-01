@@ -2,7 +2,7 @@
 
 ## Features
 
-- Oringal Sabaki features unchanged
+- Original Sabaki features unchanged
 - Added fully functional tsumego mode
 - Tsumego hints
 - Tsumego auto response
@@ -21,4 +21,4 @@
 Click 'File' - 'Manage Tsumego' - 'Add' (bottom left) - 'Add Existing Files...' (add multiple tsumego sgf files)
 
 - Enable Tsumego Mode
-Clike 'Tools' -  'Toggle Tsumego Mode' - Enjoy solving tsumego problems!
+Click 'Tools' -  'Toggle Tsumego Mode' - Enjoy solving tsumego problems!
