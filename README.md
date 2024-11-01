@@ -1,4 +1,4 @@
-# ![Sabaki: An elegant Go/Baduk/Weiqi board and SGF editor for a more civilized age.](./banner.png)
+# ![Added fully functional tsumego mode for Sabaki](./banner.png)
 
 ## Features
 
