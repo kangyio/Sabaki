@@ -99,7 +99,7 @@ exports.get = function(props = {}) {
           click: () => sabaki.openDrawer('info')
         },
         {
-          label: i18n.t('menu.file', '&Manage Games…'),
+          label: i18n.t('menu.file', '&Manage Tsumego'),
           accelerator: 'CmdOrCtrl+Shift+M',
           enabled: !disableGameLoading,
           click: () => sabaki.openDrawer('gamechooser')

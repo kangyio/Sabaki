@@ -490,7 +490,7 @@ export default class GameChooserDrawer extends Component {
           show
         },
 
-        h('h2', {}, t('Manage Games')),
+        h('h2', {}, t('Manage Tsumego')),
 
         h('input', {
           type: 'search',
