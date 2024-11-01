@@ -22,3 +22,7 @@ Click 'File' - 'Manage Tsumego' - 'Add' (bottom left) - 'Add Existing Files...' 
 
 - Enable Tsumego Mode
 Click 'Tools' -  'Toggle Tsumego Mode' - Enjoy solving tsumego problems!
+
+- Enable Automatic Answer Check
+Any branch or node marked with 'Right' comment or 'Good Move' annotation will be marked as right answers.
+Any branch or node marked with 'Wrong' comment or 'Bad Move' annotation will be marked as wrong answers.
